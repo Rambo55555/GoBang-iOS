@@ -3,16 +3,34 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		413494F92637A0090062775B /* TextAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413494F82637A0080062775B /* TextAlertView.swift */; };
+		41441A012625182700E11FC9 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A002625182700E11FC9 /* LoginView.swift */; };
+		41441A0E262524C000E11FC9 /* RoundedNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A0B262524C000E11FC9 /* RoundedNavigationLink.swift */; };
+		41441A0F262524C000E11FC9 /* RoundedAlertButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A0C262524C000E11FC9 /* RoundedAlertButton.swift */; };
+		41441A10262524C000E11FC9 /* RoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A0D262524C000E11FC9 /* RoundedButton.swift */; };
+		41441A1B262525CA00E11FC9 /* GameLobbyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A1A262525CA00E11FC9 /* GameLobbyView.swift */; };
+		41441A232625269D00E11FC9 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A222625269D00E11FC9 /* Colors.swift */; };
+		41441A2C262526D600E11FC9 /* ViewConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A2B262526D600E11FC9 /* ViewConstants.swift */; };
+		41588FFE262930F500E61E6E /* GBSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41588FFD262930F500E61E6E /* GBSocket.swift */; };
+		41589007262937BD00E61E6E /* SocketHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41589006262937BD00E61E6E /* SocketHelper.swift */; };
+		4158900C262974F400E61E6E /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4158900B262974F400E61E6E /* User.swift */; };
+		41589015262999E800E61E6E /* HttpRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41589014262999E800E61E6E /* HttpRequest.swift */; };
+		4158901A2629D25600E61E6E /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 415890192629D25600E61E6E /* Message.swift */; };
 		41756D27261DF3760041C833 /* GoBangApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41756D26261DF3760041C833 /* GoBangApp.swift */; };
 		41756D29261DF3760041C833 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41756D28261DF3760041C833 /* ContentView.swift */; };
 		41756D2B261DF3780041C833 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41756D2A261DF3780041C833 /* Assets.xcassets */; };
 		41756D2E261DF3780041C833 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41756D2D261DF3780041C833 /* Preview Assets.xcassets */; };
 		41756D39261DF3780041C833 /* GoBangTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41756D38261DF3780041C833 /* GoBangTests.swift */; };
 		41756D44261DF3780041C833 /* GoBangUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41756D43261DF3780041C833 /* GoBangUITests.swift */; };
+		41756D56261E8DF20041C833 /* GoBangExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41756D55261E8DF20041C833 /* GoBangExtensions.swift */; };
+		41756D5F261E9DAD0041C833 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41756D5E261E9DAD0041C833 /* BoardView.swift */; };
+		41756D68261EE3150041C833 /* GoBangModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41756D67261EE3150041C833 /* GoBangModel.swift */; };
+		418E204526242F6300EF76DD /* GoBangViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 418E204426242F6300EF76DD /* GoBangViewModel.swift */; };
+		C41A768A288DD4C1586C10CF /* Pods_GoBang.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F4D0FB7F963690D51A6637D /* Pods_GoBang.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +51,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		37E50D074CA248AE2906C2D2 /* Pods-GoBang.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoBang.debug.xcconfig"; path = "Target Support Files/Pods-GoBang/Pods-GoBang.debug.xcconfig"; sourceTree = "<group>"; };
+		413494F82637A0080062775B /* TextAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAlertView.swift; sourceTree = "<group>"; };
+		41441A002625182700E11FC9 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		41441A0B262524C000E11FC9 /* RoundedNavigationLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedNavigationLink.swift; sourceTree = "<group>"; };
+		41441A0C262524C000E11FC9 /* RoundedAlertButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedAlertButton.swift; sourceTree = "<group>"; };
+		41441A0D262524C000E11FC9 /* RoundedButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedButton.swift; sourceTree = "<group>"; };
+		41441A1A262525CA00E11FC9 /* GameLobbyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLobbyView.swift; sourceTree = "<group>"; };
+		41441A222625269D00E11FC9 /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		41441A2B262526D600E11FC9 /* ViewConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewConstants.swift; sourceTree = "<group>"; };
+		41588FFD262930F500E61E6E /* GBSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GBSocket.swift; sourceTree = "<group>"; };
+		415890022629348900E61E6E /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		41589006262937BD00E61E6E /* SocketHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketHelper.swift; sourceTree = "<group>"; };
+		4158900B262974F400E61E6E /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		41589014262999E800E61E6E /* HttpRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpRequest.swift; sourceTree = "<group>"; };
+		415890192629D25600E61E6E /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		41756D23261DF3760041C833 /* GoBang.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoBang.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		41756D26261DF3760041C833 /* GoBangApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoBangApp.swift; sourceTree = "<group>"; };
 		41756D28261DF3760041C833 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -45,6 +78,12 @@
 		41756D3F261DF3780041C833 /* GoBangUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoBangUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		41756D43261DF3780041C833 /* GoBangUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoBangUITests.swift; sourceTree = "<group>"; };
 		41756D45261DF3780041C833 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		41756D55261E8DF20041C833 /* GoBangExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoBangExtensions.swift; sourceTree = "<group>"; };
+		41756D5E261E9DAD0041C833 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		41756D67261EE3150041C833 /* GoBangModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoBangModel.swift; sourceTree = "<group>"; };
+		418E204426242F6300EF76DD /* GoBangViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoBangViewModel.swift; sourceTree = "<group>"; };
+		41D266FEBDFBB074A3E0B575 /* Pods-GoBang.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoBang.release.xcconfig"; path = "Target Support Files/Pods-GoBang/Pods-GoBang.release.xcconfig"; sourceTree = "<group>"; };
+		4F4D0FB7F963690D51A6637D /* Pods_GoBang.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GoBang.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C41A768A288DD4C1586C10CF /* Pods_GoBang.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,6 +112,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C639584B38B3681B1844307 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4F4D0FB7F963690D51A6637D /* Pods_GoBang.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		41441A0A262524AA00E11FC9 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				41441A0C262524C000E11FC9 /* RoundedAlertButton.swift */,
+				41441A0D262524C000E11FC9 /* RoundedButton.swift */,
+				41441A0B262524C000E11FC9 /* RoundedNavigationLink.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		41441A27262526A500E11FC9 /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+				41441A2B262526D600E11FC9 /* ViewConstants.swift */,
+				41441A222625269D00E11FC9 /* Colors.swift */,
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		41589010262987CA00E61E6E /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				41589014262999E800E61E6E /* HttpRequest.swift */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
 		41756D1A261DF3760041C833 = {
 			isa = PBXGroup;
 			children = (
@@ -79,6 +154,8 @@
 				41756D37261DF3780041C833 /* GoBangTests */,
 				41756D42261DF3780041C833 /* GoBangUITests */,
 				41756D24261DF3760041C833 /* Products */,
+				77A1920170B4F986BB55CF1F /* Pods */,
+				1C639584B38B3681B1844307 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -95,6 +172,10 @@
 		41756D25261DF3760041C833 /* GoBang */ = {
 			isa = PBXGroup;
 			children = (
+				41756D72261EF4BF0041C833 /* viewModel */,
+				41756D66261EE2B60041C833 /* model */,
+				41756D5D261E9D7F0041C833 /* view */,
+				41756D54261E8DD10041C833 /* extensions */,
 				41756D26261DF3760041C833 /* GoBangApp.swift */,
 				41756D28261DF3760041C833 /* ContentView.swift */,
 				41756D2A261DF3780041C833 /* Assets.xcassets */,
@@ -130,6 +211,58 @@
 			path = GoBangUITests;
 			sourceTree = "<group>";
 		};
+		41756D54261E8DD10041C833 /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				41756D55261E8DF20041C833 /* GoBangExtensions.swift */,
+			);
+			path = extensions;
+			sourceTree = "<group>";
+		};
+		41756D5D261E9D7F0041C833 /* view */ = {
+			isa = PBXGroup;
+			children = (
+				41441A27262526A500E11FC9 /* Constants */,
+				41441A002625182700E11FC9 /* LoginView.swift */,
+				41441A0A262524AA00E11FC9 /* Shared */,
+				41756D5E261E9DAD0041C833 /* BoardView.swift */,
+				41441A1A262525CA00E11FC9 /* GameLobbyView.swift */,
+				413494F82637A0080062775B /* TextAlertView.swift */,
+			);
+			path = view;
+			sourceTree = "<group>";
+		};
+		41756D66261EE2B60041C833 /* model */ = {
+			isa = PBXGroup;
+			children = (
+				41589010262987CA00E61E6E /* Helper */,
+				415890022629348900E61E6E /* MyPlayground.playground */,
+				41756D67261EE3150041C833 /* GoBangModel.swift */,
+				41588FFD262930F500E61E6E /* GBSocket.swift */,
+				41589006262937BD00E61E6E /* SocketHelper.swift */,
+				4158900B262974F400E61E6E /* User.swift */,
+				415890192629D25600E61E6E /* Message.swift */,
+			);
+			path = model;
+			sourceTree = "<group>";
+		};
+		41756D72261EF4BF0041C833 /* viewModel */ = {
+			isa = PBXGroup;
+			children = (
+				418E204426242F6300EF76DD /* GoBangViewModel.swift */,
+			);
+			path = viewModel;
+			sourceTree = "<group>";
+		};
+		77A1920170B4F986BB55CF1F /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				37E50D074CA248AE2906C2D2 /* Pods-GoBang.debug.xcconfig */,
+				41D266FEBDFBB074A3E0B575 /* Pods-GoBang.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -137,9 +270,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 41756D48261DF3780041C833 /* Build configuration list for PBXNativeTarget "GoBang" */;
 			buildPhases = (
+				6624C010231C56FDB239E164 /* [CP] Check Pods Manifest.lock */,
 				41756D1F261DF3760041C833 /* Sources */,
 				41756D20261DF3760041C833 /* Frameworks */,
 				41756D21261DF3760041C833 /* Resources */,
+				D2A5B73CB1F12E355241E8F7 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -254,12 +389,71 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		6624C010231C56FDB239E164 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-GoBang-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D2A5B73CB1F12E355241E8F7 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GoBang/Pods-GoBang-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GoBang/Pods-GoBang-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GoBang/Pods-GoBang-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		41756D1F261DF3760041C833 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				41756D68261EE3150041C833 /* GoBangModel.swift in Sources */,
+				41441A232625269D00E11FC9 /* Colors.swift in Sources */,
+				41441A10262524C000E11FC9 /* RoundedButton.swift in Sources */,
+				4158901A2629D25600E61E6E /* Message.swift in Sources */,
+				41441A012625182700E11FC9 /* LoginView.swift in Sources */,
+				4158900C262974F400E61E6E /* User.swift in Sources */,
+				413494F92637A0090062775B /* TextAlertView.swift in Sources */,
+				41756D56261E8DF20041C833 /* GoBangExtensions.swift in Sources */,
+				418E204526242F6300EF76DD /* GoBangViewModel.swift in Sources */,
+				41589007262937BD00E61E6E /* SocketHelper.swift in Sources */,
+				41441A2C262526D600E11FC9 /* ViewConstants.swift in Sources */,
+				41756D5F261E9DAD0041C833 /* BoardView.swift in Sources */,
+				41441A0E262524C000E11FC9 /* RoundedNavigationLink.swift in Sources */,
+				41588FFE262930F500E61E6E /* GBSocket.swift in Sources */,
 				41756D29261DF3760041C833 /* ContentView.swift in Sources */,
+				41441A1B262525CA00E11FC9 /* GameLobbyView.swift in Sources */,
+				41441A0F262524C000E11FC9 /* RoundedAlertButton.swift in Sources */,
+				41589015262999E800E61E6E /* HttpRequest.swift in Sources */,
 				41756D27261DF3760041C833 /* GoBangApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -414,6 +608,7 @@
 		};
 		41756D49261DF3780041C833 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 37E50D074CA248AE2906C2D2 /* Pods-GoBang.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -435,6 +630,7 @@
 		};
 		41756D4A261DF3780041C833 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 41D266FEBDFBB074A3E0B575 /* Pods-GoBang.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
