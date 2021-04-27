@@ -80,14 +80,14 @@ class SocketHelper: NSObject {
         sendMessage(message: &message, onResponse: onResponse)
     }
     // 加入房间
-    func joinRoom(roomId: Int, isPlayer: Bool, onResponse:@escaping (Message)->()){
+    func joinRoom(roomId: Int, isPlayer: Bool, onResponse: @escaping (Message)->()){
         var message = Message(from: username)
         if isPlayer {
             message.setType(type: MessageType.ENTER_ROOM_AS_PLAYER)
         } else {
             message.setType(type: MessageType.ENTER_ROOM_AS_WATCHER)
         }
-        message.data = "$roomId"
+        message.data = String(roomId)
         sendMessage(message: &message, onResponse: onResponse)
     }
 
@@ -142,6 +142,7 @@ class SocketHelper: NSObject {
             messageList[message.messageId] = message
         }
         messageQueue.append(message)
+        messageListeners[message.messageId] = onResponse
         send(message: message)
     }
     
@@ -263,6 +264,7 @@ extension SocketHelper: StreamDelegate {
         let bufferPoint = UnsafeMutableBufferPointer(start: buffer, count: length)
         let data = Data(buffer: bufferPoint)
         //data[0..<4].lyz_4BytesToInt()
+        print("data : \(data)")
         let removeData = data.advanced(by: 4)
 //        print("buffer: \(data) type: \(type(of: data))")
 //        print("removeData: \(removeData) type: \(type(of: removeData))")
@@ -279,10 +281,20 @@ extension SocketHelper: StreamDelegate {
 //          else {
 //            return nil
 //        }
+        //print("message: \(message)")
         print("接收成功：\(message!.jsonStr ?? "")")
         //2
         //let messageSender: MessageSender = (name == self.username) ? .ourself : .someoneElse
-        //3
+        //3 处理消息对应的回调函数并移除该消息回调函数
+        for messageResponse in messageListeners {
+            if messageResponse.key == message!.messageId {
+                print("消息回调处理开始  ")
+                messageResponse.value(message!)
+                messageListeners.removeValue(forKey: messageResponse.key)
+                print("消息回调处理完成  ")
+                break
+            }
+        }
         return message
     }
 }

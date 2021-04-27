@@ -29,11 +29,19 @@ struct BoardView: View {
     @State var confirmIsAble = false
     @State var canPut = true
     @State var pieceScale: CGFloat = 1
+    @State var player1: String = ""
+    @State var player2: String = ""
+    @State var isWhite: Bool = true
+    @State var isPlayer1Ready: String = "未准备"
+    @State var isPlayer2Ready: String = "未准备"
+    @State var readyIsAble: Bool = true
+    
     @EnvironmentObject var viewModel: GoBangViewModel
     
 //    init(viewModel: GoBangViewModel) {
 //        self.viewModel = viewModel
 //    }
+    
     var locString : String {
         guard let loc = tapLocation else { return "Tap" }
         return "\(Int(loc.x)), \(Int(loc.y))"
@@ -104,6 +112,26 @@ struct BoardView: View {
 //            .frame(width: 380, height: 380, alignment: .center)
         
         VStack {
+            HStack(spacing: 60) {
+                PlayerView(isWhite: isWhite, playerName: viewModel.user!.username, isReady: $isPlayer1Ready)
+                VStack(spacing: 25) {
+                    Text("房间号")
+                    Text(viewModel.roomNumber)
+                    Button(action: {
+                        //准备b
+                        readyIsAble = false
+                        isPlayer1Ready = "已准备"
+                    }, label: {
+                        Text("准备")
+                            .font(Font.system(size:30, design: .rounded))
+                            .disabled(readyIsAble == false)
+                    })
+                    .opacity(readyIsAble ? 1 : 0)
+                    
+                }
+                PlayerView(isWhite: !isWhite, playerName: player1, isReady: $isPlayer2Ready)
+            }
+            
             ZStack{
                 Group {
                     Checkerboard(rows: BoardView.rows-1, columns: BoardView.columns-1)
@@ -350,6 +378,30 @@ struct ChessCircle: Shape {
     }
 }
 
+struct PlayerView: View {
+    
+    @State var isWhite: Bool
+    @State var playerName: String
+    @Binding var isReady: String
+    
+    var body: some View {
+        VStack(spacing: 25) {
+            if isWhite {
+                Image(systemName: "person")
+                    .scaleEffect(4)
+            } else {
+                Image(systemName: "person.fill")
+                    .scaleEffect(4)
+            }
+            
+            Text(playerName)
+            
+            Text(isReady)
+
+        }
+    }
+    
+}
 //struct BoardView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        BoardView()

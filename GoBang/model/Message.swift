@@ -14,7 +14,7 @@ struct Message: Codable {
     var data = ""
     var token = ""
     var type = 0
-    var messageId = 0
+    var messageId: Int = 0
     
     init() {
         
@@ -41,7 +41,7 @@ struct Message: Codable {
     }
     
     mutating func setRandomMessageId() {
-        self.messageId = Int(arc4random())
+        self.messageId = Int(arc4random_uniform(2147483647))
     }
     
     mutating func setFrom(from: String) {

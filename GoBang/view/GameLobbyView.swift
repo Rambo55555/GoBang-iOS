@@ -9,36 +9,69 @@ import SwiftUI
 
 struct GameLobbyView: View {
     @EnvironmentObject var viewModel: GoBangViewModel
+    @State var addRoomAlertIsPresented: Bool = false
     @State var alertIsPresented: Bool = false
     @State var text: String?
     @State var willMoveToBoardView = false
+    @State var errorMessage = ""
     var body: some View {
         
             Text("GameLobby")
             NavigationView {
                 VStack {
-                    Button("加入房间") {
-                        alertIsPresented = true
+                    Button("创建房间") {
+                        viewModel.socketHelper.createRoom(onResponse: { message in
+                            if message.data == "ERROR" {
+                                errorMessage = "创建房间失败"
+                                alertIsPresented = true
+                            } else {
+                                print(message)
+                                viewModel.setRoomNumber(roomNumber: message.data)
+                                willMoveToBoardView = true
+                            }
+                        })
                     }
-                    .textFieldAlert(isPresented: $alertIsPresented) { () -> TextFieldAlert in
+                    Button("加入房间") {
+                        addRoomAlertIsPresented = true
+                    }
+                    .textFieldAlert(isPresented: $addRoomAlertIsPresented) { () -> TextFieldAlert in
                         TextFieldAlert(
                             title: "输入房间号",
                             message: "",
                             text: self.$text,
-                            doneAction: {text in
+                            doneAction: {inputText in
+                                //viewModel.socketHelper.joinRoom(roomId: Int(inputText), isPlayer: true){ repMessage in print(repMessage) }
+                                //self.viewModel.socketHelper.joinRoom(roomId: Int(text), isPlayer: true, onResponse: <#T##(Message) -> ()#>)
+                                if let roomId = Int(inputText!) {
+                                    viewModel.socketHelper.joinRoom(roomId: roomId, isPlayer: true) { message in
+                                        if message.data == "ERROR" {
+                                            print("房间号错误")
+                                            errorMessage = "房间号错误"
+                                            alertIsPresented = true
+                                            
+                                        } else {
+                                            print(message)
+                                            viewModel.setRoomNumber(roomNumber: String(roomId))
+                                            willMoveToBoardView = true
+                                        }
+                                        
+                                    }
+                                }
+                            
                                 
-                                willMoveToBoardView = true
                             })
                     }
+                    
                         //BoardView().environmentObject(self.viewModel)
                     NavigationLink(destination: BoardView().environmentObject(self.viewModel)) {
                         Text("Random Match")
                     }
-                    NavigationLink(destination: Text("Exit View")) {
-                        Text("Exit")
-                    }
-                }.navigate(to: BoardView().environmentObject(self.viewModel), when: $willMoveToBoardView, navBarHiden: true)
+                    
+                }.navigate(to: BoardView().environmentObject(self.viewModel), when: $willMoveToBoardView, navBarHiden: false)
                 
+            }
+            .alert(isPresented: $alertIsPresented) {
+                Alert(title: Text("错误"), message: Text("房间号错误"), dismissButton: .default(Text("Got it!")))
             }
         
         
@@ -67,7 +100,7 @@ extension View {
 
                 NavigationLink(
                     destination: view
-                        .navigationBarTitle("返回")
+                        //.navigationBarTitle("返回")
                         .navigationBarHidden(navBarHiden),
                         //.navigationBarBackButtonHidden(true),
                         

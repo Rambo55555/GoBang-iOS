@@ -14,20 +14,22 @@ class GoBangViewModel: ObservableObject{
     @Published var user: User? = User()
     private var autosaveCancellable: AnyCancellable?
     var socketHelper: SocketHelper = SocketHelper()
+    var roomNumber: String = ""
     
     init() {
         let defaultKey = "userInfo"
-        UserDefaults.resetStandardUserDefaults()
-        
+        //UserDefaults.standard.removeObject(forKey: defaultKey)
         user = User(json: UserDefaults.standard.data(forKey: defaultKey)) ?? nil
         
         socketHelper.setupNetworkCommunication()
-        socketHelper.establishConnection(username: user!.username, token: user!.token)
-        
-        autosaveCancellable = $user.sink { user in
-            //print("\(emojiArt.json?.utf8 ?? "nil")")
-            UserDefaults.standard.set(user!.json, forKey: defaultKey)
+        if user != nil {
+            socketHelper.establishConnection(username: user!.username, token: user!.token)
+            autosaveCancellable = $user.sink { user in
+                //print("\(emojiArt.json?.utf8 ?? "nil")")
+                UserDefaults.standard.set(user!.json, forKey: defaultKey)
+            }
         }
+        
     }
     
     // MARK: - Intent(s)
@@ -83,6 +85,7 @@ class GoBangViewModel: ObservableObject{
                                     self.user = User(username: username, password: password, token: jsonData["token"] as! String)
                                     onSuccess()
                                     print("login success")
+                                    socketHelper.establishConnection(username: user!.username, token: user!.token)
                                 }
                             }
                         }
@@ -108,8 +111,13 @@ class GoBangViewModel: ObservableObject{
         self.user != nil
     }
     
+    func setRoomNumber(roomNumber: String) {
+        self.roomNumber = roomNumber
+    }
+    
     var pieces: Array<GoBangModel.Piece> {
         goBangModel.pieces
     }
+    
 
 }
