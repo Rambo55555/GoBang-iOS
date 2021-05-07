@@ -286,7 +286,7 @@ extension ChatRoom: StreamDelegate {
         newMessage.setData(data: "hhh")
         newMessage.setToken(token: token)
         newMessage.setType(type: MessageType.CREATE_ROOM)
-        chatRoom.send(message: newMessage)
+        //chatRoom.send(message: newMessage)
         return message
     }
 }
@@ -348,11 +348,68 @@ extension Data {
     
 }
 
-let chatRoom = ChatRoom()
-var message = Message()
+//let chatRoom = ChatRoom()
+//var message = Message()
+//
+//chatRoom.setupNetworkCommunication()
+//chatRoom.establishConnection(username: "Rambo", token: token)
+struct Position: Codable {
+    var x: Int = 0
+    var y: Int = 0
+    var chessColor: Int = 0 // black 0
+    
+    init() {
+        
+    }
+    init?(json: Data?) {
+        if json != nil, let new = try? JSONDecoder().decode(Position.self, from: json!) {
+            self = new
+        } else {
+            return nil
+        }
+    }
+    var json: Data? {
+        return try? JSONEncoder().encode(self)
+    }
+    var jsonStr: String? {
+        return try? String(data: json!, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
+    }
+}
 
-chatRoom.setupNetworkCommunication()
-chatRoom.establishConnection(username: "Rambo", token: token)
+
+var position = Position()
+
+
+//do {
+//    let jsonData = try? JSONSerialization.data(withJSONObject: dictionary, options: [])
+//
+//    let jsonString = String(data: jsonData!, encoding: String.Encoding.utf8)!
+//
+//    print("jsonString: \(jsonString)")
+//} catch {
+//    print(error.localizedDescription)
+//}
+
+
+/// 字典转json字符串
+func getJSONStringFromDictionary(dictionary: NSMutableDictionary) -> String {
+    if !JSONSerialization.isValidJSONObject(dictionary) {
+        return "\"{}\""
+    }
+    do {
+        let data: Data = try JSONSerialization.data(withJSONObject: dictionary, options: []) as Data
+        let jsonString = NSString(data: data as Data, encoding: String.Encoding.utf8.rawValue) ?? ""
+        return jsonString as String
+    } catch {
+        return "\"{}\""
+    }
+}
+var dictionary: NSMutableDictionary = NSMutableDictionary()
+dictionary["roomId"] = 3
+dictionary["position"] = ["x": position.x, "y": position.y, "chessColor": position.chessColor]
+let str = getJSONStringFromDictionary(dictionary: dictionary)
+print("str: \(str)")
+
 
 
 

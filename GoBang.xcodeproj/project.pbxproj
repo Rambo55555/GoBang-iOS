@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		413494F92637A0090062775B /* TextAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413494F82637A0080062775B /* TextAlertView.swift */; };
+		413494FE26398C310062775B /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413494FD26398C310062775B /* Room.swift */; };
+		4134950326439BB70062775B /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4134950226439BB70062775B /* Position.swift */; };
+		41349508264435950062775B /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41349507264435950062775B /* ImageView.swift */; };
+		4134950D2644363B0062775B /* OptionalImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4134950C2644363B0062775B /* OptionalImage.swift */; };
+		41349512264438590062775B /* ImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41349511264438590062775B /* ImageViewModel.swift */; };
+		413495172644B9AC0062775B /* Spinning.swift in Sources */ = {isa = PBXBuildFile; fileRef = 413495162644B9AC0062775B /* Spinning.swift */; };
 		41441A012625182700E11FC9 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A002625182700E11FC9 /* LoginView.swift */; };
 		41441A0E262524C000E11FC9 /* RoundedNavigationLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A0B262524C000E11FC9 /* RoundedNavigationLink.swift */; };
 		41441A0F262524C000E11FC9 /* RoundedAlertButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41441A0C262524C000E11FC9 /* RoundedAlertButton.swift */; };
@@ -53,6 +59,12 @@
 /* Begin PBXFileReference section */
 		37E50D074CA248AE2906C2D2 /* Pods-GoBang.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoBang.debug.xcconfig"; path = "Target Support Files/Pods-GoBang/Pods-GoBang.debug.xcconfig"; sourceTree = "<group>"; };
 		413494F82637A0080062775B /* TextAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAlertView.swift; sourceTree = "<group>"; };
+		413494FD26398C310062775B /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
+		4134950226439BB70062775B /* Position.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Position.swift; sourceTree = "<group>"; };
+		41349507264435950062775B /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
+		4134950C2644363B0062775B /* OptionalImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OptionalImage.swift; sourceTree = "<group>"; };
+		41349511264438590062775B /* ImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewModel.swift; sourceTree = "<group>"; };
+		413495162644B9AC0062775B /* Spinning.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Spinning.swift; sourceTree = "<group>"; };
 		41441A002625182700E11FC9 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		41441A0B262524C000E11FC9 /* RoundedNavigationLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedNavigationLink.swift; sourceTree = "<group>"; };
 		41441A0C262524C000E11FC9 /* RoundedAlertButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundedAlertButton.swift; sourceTree = "<group>"; };
@@ -222,12 +234,15 @@
 		41756D5D261E9D7F0041C833 /* view */ = {
 			isa = PBXGroup;
 			children = (
+				413495162644B9AC0062775B /* Spinning.swift */,
+				4134950C2644363B0062775B /* OptionalImage.swift */,
 				41441A27262526A500E11FC9 /* Constants */,
 				41441A002625182700E11FC9 /* LoginView.swift */,
 				41441A0A262524AA00E11FC9 /* Shared */,
 				41756D5E261E9DAD0041C833 /* BoardView.swift */,
 				41441A1A262525CA00E11FC9 /* GameLobbyView.swift */,
 				413494F82637A0080062775B /* TextAlertView.swift */,
+				41349507264435950062775B /* ImageView.swift */,
 			);
 			path = view;
 			sourceTree = "<group>";
@@ -242,6 +257,8 @@
 				41589006262937BD00E61E6E /* SocketHelper.swift */,
 				4158900B262974F400E61E6E /* User.swift */,
 				415890192629D25600E61E6E /* Message.swift */,
+				413494FD26398C310062775B /* Room.swift */,
+				4134950226439BB70062775B /* Position.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
@@ -250,6 +267,7 @@
 			isa = PBXGroup;
 			children = (
 				418E204426242F6300EF76DD /* GoBangViewModel.swift */,
+				41349511264438590062775B /* ImageViewModel.swift */,
 			);
 			path = viewModel;
 			sourceTree = "<group>";
@@ -437,9 +455,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				41756D68261EE3150041C833 /* GoBangModel.swift in Sources */,
+				413495172644B9AC0062775B /* Spinning.swift in Sources */,
+				4134950D2644363B0062775B /* OptionalImage.swift in Sources */,
 				41441A232625269D00E11FC9 /* Colors.swift in Sources */,
 				41441A10262524C000E11FC9 /* RoundedButton.swift in Sources */,
 				4158901A2629D25600E61E6E /* Message.swift in Sources */,
+				41349508264435950062775B /* ImageView.swift in Sources */,
+				41349512264438590062775B /* ImageViewModel.swift in Sources */,
 				41441A012625182700E11FC9 /* LoginView.swift in Sources */,
 				4158900C262974F400E61E6E /* User.swift in Sources */,
 				413494F92637A0090062775B /* TextAlertView.swift in Sources */,
@@ -450,6 +472,8 @@
 				41756D5F261E9DAD0041C833 /* BoardView.swift in Sources */,
 				41441A0E262524C000E11FC9 /* RoundedNavigationLink.swift in Sources */,
 				41588FFE262930F500E61E6E /* GBSocket.swift in Sources */,
+				4134950326439BB70062775B /* Position.swift in Sources */,
+				413494FE26398C310062775B /* Room.swift in Sources */,
 				41756D29261DF3760041C833 /* ContentView.swift in Sources */,
 				41441A1B262525CA00E11FC9 /* GameLobbyView.swift in Sources */,
 				41441A0F262524C000E11FC9 /* RoundedAlertButton.swift in Sources */,

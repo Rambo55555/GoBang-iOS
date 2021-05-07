@@ -33,14 +33,20 @@ struct BoardView: View {
     @State var player2: String = ""
     @State var isWhite: Bool = true
     @State var isPlayer1Ready: String = "未准备"
-    @State var isPlayer2Ready: String = "未准备"
+    @State var isPlayer2Ready: String = ""
     @State var readyIsAble: Bool = true
-    
+    @State var room: Room = Room()
+    @State var noteMessage: String = ""
+    @State var canPutPiece: Bool = false
+    @State var pieceColor: GoBangModel.Piece.pieceState = .black
     @EnvironmentObject var viewModel: GoBangViewModel
-    
 //    init(viewModel: GoBangViewModel) {
 //        self.viewModel = viewModel
 //    }
+    init() {
+        //print("ce shi")
+        //viewModel.addMessageHandler(onResponse: {message in print("hhh")})
+    }
     
     var locString : String {
         guard let loc = tapLocation else { return "Tap" }
@@ -90,11 +96,10 @@ struct BoardView: View {
     //            let row: Int = Int(ceil((loc.y - (rectHeight - BoardView.boardHeight)/2) / boardInfo.rowSize - 1))
                 print("location row: \(row) col: \(col)")
                 //print("token: \(viewModel.user!.token)")
-                if viewModel.hasPiece(row: row, col: col) == false && viewModel.isConfirmed(row: row, col: col) == false{
+                if viewModel.hasPiece(row: row, col: col) == false && viewModel.isConfirmed(row: row, col: col) == false && canPutPiece {
                     cancelIsAble = true
                     confirmIsAble = true
-                    viewModel.setPiece(row: row, col: col, state: .black, order: curOrderNum, confirmed: false)
-                    
+                    viewModel.setPiece(row: row, col: col, state: pieceColor, order: curOrderNum, confirmed: false)
                 }
                 self.row = row
                 self.col = col
@@ -102,6 +107,7 @@ struct BoardView: View {
                     pieceScale = 1.25
                 }
             }
+            
         }
         return drag
     }
@@ -112,25 +118,7 @@ struct BoardView: View {
 //            .frame(width: 380, height: 380, alignment: .center)
         
         VStack {
-            HStack(spacing: 60) {
-                PlayerView(isWhite: isWhite, playerName: viewModel.user!.username, isReady: $isPlayer1Ready)
-                VStack(spacing: 25) {
-                    Text("房间号")
-                    Text(viewModel.roomNumber)
-                    Button(action: {
-                        //准备b
-                        readyIsAble = false
-                        isPlayer1Ready = "已准备"
-                    }, label: {
-                        Text("准备")
-                            .font(Font.system(size:30, design: .rounded))
-                            .disabled(readyIsAble == false)
-                    })
-                    .opacity(readyIsAble ? 1 : 0)
-                    
-                }
-                PlayerView(isWhite: !isWhite, playerName: player1, isReady: $isPlayer2Ready)
-            }
+            RoomView(readyIsAble: $readyIsAble, noteMessage: $noteMessage).environmentObject(viewModel)
             
             ZStack{
                 Group {
@@ -158,11 +146,94 @@ struct BoardView: View {
                 .frame(width: rectWidth, height: rectHeight)
                 .background(Color.orange)
                 .gesture(putPiece())
-            ChessButton(cancelIsAble: $cancelIsAble, confirmIsAble: $confirmIsAble, tapLocation: $tapLocation, dragLocation: $dragLocation, row: $row, col: $col, curOrderNum: $curOrderNum, pieceScale: $pieceScale)
+            ChessButton(cancelIsAble: $cancelIsAble, confirmIsAble: $confirmIsAble, tapLocation: $tapLocation, dragLocation: $dragLocation, row: $row, col: $col, curOrderNum: $curOrderNum, pieceScale: $pieceScale, pieceColor: $pieceColor, noteMessage: $noteMessage, canPut: $canPut)
+        }
+        .onAppear(){
+            viewModel.addMessageHandler(onResponse: messageHandler)
+        }
+        .onDisappear(){
+            viewModel.clearRoomInfo()
         }
 
 
     }
+    func messageHandler(message: Message) -> () {
+        switch message.type {
+        case MessageType.OPPONENT_ENTER_ROOM:
+            print("对手进入房间")
+            onOpponentEnterRoom(message: message)
+        case MessageType.OPPONENT_READY:
+            print("对手已经准备")
+            onOpponentReady(message: message)
+        case MessageType.BEGIN_GAME:
+            print("游戏开始")
+            // 游戏开始动画
+            onBeginGame(message: message)
+        case MessageType.MOVE:
+            print("移动棋子")
+            onMove(message: message)
+        case MessageType.CANCEL_READY:
+            print("取消准备")
+            
+        case MessageType.OPPONENT_EXIT_ROOM:
+            print("退出房间")
+            noteMessage = "对手退出房间"
+        case MessageType.WIN:
+            print("胜利: \(message)")
+        default:
+            print("default ")
+        }
+    }
+    func onMove(message: Message) {
+        viewModel.onMovePiece(message: message, order: curOrderNum) { isWin in
+            if isWin {
+                curOrderNum += 1
+                noteMessage = "你输了"
+                canPutPiece = false
+            } else {
+                curOrderNum += 1
+                canPutPiece = true
+            }
+        }
+        
+    }
+    func onOpponentEnterRoom(message: Message) {
+        viewModel.onOpponentJoinRoom(message: message)
+        setRoomInfo()
+    }
+    func onOpponentReady(message: Message) {
+//        viewModel.onOpponentJoinRoom(message: message)
+//        isPlayer1Ready = viewModel.room.isPlayer1Ready() ? "已准备" : "未准备"
+//        isPlayer2Ready = viewModel.room.isPlayer2Ready() ? "已准备" : "未准备"
+//        isWhite = viewModel.room.player1?.chessColor == 0
+//        player1 = viewModel.room.player1!.username
+//        player2 = viewModel.room.player2!.username
+        viewModel.onOpponentReady(message: message)
+        setRoomInfo()
+    }
+    // 游戏开始动画
+    func onBeginGame(message: Message) {
+        noteMessage = "游戏开始 你是"
+        // 黑棋是 0
+        if Int(message.data!) == 0 {
+            noteMessage += "黑棋先手"
+            pieceColor = .black
+            canPutPiece = true
+        } else {
+            noteMessage += "白棋后手"
+            pieceColor = .white
+        }
+    }
+    
+    func setRoomInfo() {
+        isPlayer1Ready = viewModel.room.isPlayer1Ready() ? "已准备" : "未准备"
+        isPlayer2Ready = viewModel.room.isPlayer2Ready() ? "已准备" : "未准备"
+        isWhite = viewModel.room.player1?.chessColor == 0
+        player1 = viewModel.room.player1!.username
+        player2 = viewModel.room.player2!.username
+    }
+    
+
 }
 
 struct ChessButton: View {
@@ -174,6 +245,9 @@ struct ChessButton: View {
     @Binding var col: Int?
     @Binding var curOrderNum: Int
     @Binding var pieceScale: CGFloat
+    @Binding var pieceColor: GoBangModel.Piece.pieceState
+    @Binding var noteMessage: String
+    @Binding var canPut: Bool
     @EnvironmentObject var viewModel: GoBangViewModel
     var body: some View {
         HStack(spacing: 60) {
@@ -202,11 +276,18 @@ struct ChessButton: View {
     
     func confirm() {
         if viewModel.isConfirmed(row: row!, col: col!) == false {
-            viewModel.setPiece(row: row!, col: col!, state: .black, order: curOrderNum, confirmed: true)
-            curOrderNum = curOrderNum + 1
+            //viewModel.setPiece(row: row!, col: col!, state: .black, order: curOrderNum, confirmed: true)
+            viewModel.putPiece(row: row!, col: col!, state: pieceColor, order: curOrderNum, onResponse: {message in print("落子成功")})
+            curOrderNum += 1
         }
         confirmIsAble = false
         cancelIsAble = false
+        if viewModel.isWin(row: row!, col: col!, state: pieceColor) {
+            noteMessage = "你赢了"
+            canPut = false
+        } else {
+            canPut = false
+        }
     }
 }
 
@@ -378,30 +459,67 @@ struct ChessCircle: Shape {
     }
 }
 
-struct PlayerView: View {
+struct RoomView: View {
     
-    @State var isWhite: Bool
-    @State var playerName: String
-    @Binding var isReady: String
-    
+    @EnvironmentObject var viewModel: GoBangViewModel
+    @Binding var readyIsAble: Bool
+    @Binding var noteMessage: String
     var body: some View {
-        VStack(spacing: 25) {
-            if isWhite {
-                Image(systemName: "person")
-                    .scaleEffect(4)
-            } else {
-                Image(systemName: "person.fill")
-                    .scaleEffect(4)
+        VStack {
+            HStack(spacing: 60) {
+                VStack(spacing: 25) {
+                    if viewModel.room.player1?.chessColor == 0 {
+                        Image(systemName: "person")
+                            .scaleEffect(4)
+                    } else {
+                        Image(systemName: "person.fill")
+                            .scaleEffect(4)
+                    }
+                    Text(viewModel.room.player1!.username)
+                    Text(viewModel.room.player1!.status == 0 ? "未准备" : "已准备")
+                }
+                VStack(spacing: 25) {
+                    Text("房间号")
+                    Text(String(viewModel.room.roomId))
+                    Button(action: {
+                        //准备
+                        viewModel.ready(roomId: viewModel.room.roomId) { message in
+                            if message.data == "ERROR" {
+                                print("准备失败")
+                            } else {
+                                print(message)
+                                readyIsAble = false
+                                viewModel.setSelfReady()
+                            }
+                        }
+                    }, label: {
+                        Text("准备")
+                            .font(Font.system(size:30, design: .rounded))
+                            .disabled(readyIsAble == false)
+                    })
+                    .opacity(readyIsAble ? 1 : 0)
+                    
+                }
+                VStack(spacing: 25) {
+                    if viewModel.room.player1?.chessColor == 1 {
+                        Image(systemName: "person")
+                            .scaleEffect(4)
+                    } else {
+                        Image(systemName: "person.fill")
+                            .scaleEffect(4)
+                    }
+                    Text(viewModel.room.player2!.username)
+                    Text(viewModel.room.player2!.status == 0 ? "未准备" : "已准备")
+                }
+                
             }
-            
-            Text(playerName)
-            
-            Text(isReady)
-
+            Text(noteMessage)
         }
+        
     }
     
 }
+
 //struct BoardView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        BoardView()

@@ -29,12 +29,13 @@ class SocketHelper: NSObject {
     private var token  = ""
 
     private var messageListeners  = [Int : (message:Message)->()]()
-
+    private var messageHandler: ((_ message: Message)->())? = nil
     private var messageQueue = [Message]()
     private var messageList  = [Int : Message]()
   
     //3
     let maxReadLength = 4096
+    let messageReadLength = 4
     // - MARK: connect
     // 建立连接
     func establishConnection(username: String, token: String) {
@@ -76,7 +77,7 @@ class SocketHelper: NSObject {
     func ready(roomId:Int, onResponse:@escaping (Message)->()){
         var message = Message(from: username)
         message.setType(type: MessageType.READY)
-        message.data = "$roomId"
+        message.data = String(roomId)
         sendMessage(message: &message, onResponse: onResponse)
     }
     // 加入房间
@@ -90,13 +91,35 @@ class SocketHelper: NSObject {
         message.data = String(roomId)
         sendMessage(message: &message, onResponse: onResponse)
     }
-
-//    func moveChess(position: Position, roomId: Int, onResponse:@escaping (Message)->()){
-//        var message = Message(from: username)
-//        message.setType(type: MessageType.MOVE)
-//        message.data = gson.toJson(mapOf("roomId" to roomId, "position" to gson.toJson(position)))
-//        sendMessage(message: &message, onResponse: onResponse)
-//    }
+    // 移动棋子
+    func moveChess(position: Position, roomId: Int, onResponse:@escaping (Message)->()){
+        var message = Message(from: username)
+        message.setType(type: MessageType.MOVE)
+        // map to json
+        //message.data = gson.toJson(mapOf("roomId" to roomId, "position" to gson.toJson(position)))
+        let dictionary: NSMutableDictionary = NSMutableDictionary()
+        dictionary["roomId"] = roomId
+        dictionary["position"] = position.jsonStr
+        let str = getJSONStringFromDictionary(dictionary: dictionary)
+        message.data = str
+        print("移动棋子: \(str)")
+        sendMessage(message: &message, onResponse: onResponse)
+    }
+    
+    /// 字典转json字符串
+    func getJSONStringFromDictionary(dictionary: NSMutableDictionary) -> String {
+        if !JSONSerialization.isValidJSONObject(dictionary) {
+            return "\"{}\""
+        }
+        do {
+            let data: Data = try JSONSerialization.data(withJSONObject: dictionary, options: []) as Data
+            let jsonString = NSString(data: data as Data, encoding: String.Encoding.utf8.rawValue) ?? ""
+            return jsonString as String
+        } catch {
+            return "\"{}\""
+        }
+    }
+    
     // 退出房间
     func exitRoom(roomId: Int, isPlayer: Bool, onResponse:@escaping (Message)->()){
         var message = Message(from: username)
@@ -121,8 +144,8 @@ class SocketHelper: NSObject {
         message.setType(type: MessageType.MATCH_ROOM)
         sendMessage(message: &message, onResponse: onResponse)
     }
-
-//    func cancelMatch() {
+    // 取消匹配
+    func cancelMatch() {
 //        var iterator = messageQueue.iterator()
 //        while (iterator.hasNext()){
 //            var message = iterator.next()
@@ -130,10 +153,15 @@ class SocketHelper: NSObject {
 //                iterator.remove()
 //            }
 //        }
-//        var message = Message(from: username)
-//        message.type = Message.CANCEL_MATCH;
-//        sendMessage(message){}
-//    }
+        for (index, messageHandler) in messageQueue.enumerated() {
+            if messageHandler.type == MessageType.MATCH_ROOM {
+                messageQueue.remove(at: index)
+            }
+        }
+        var message = Message(from: username)
+        message.type = MessageType.CANCEL_MATCH;
+        sendMessage(message: &message, onResponse: { message in })
+    }
     
     // 发送消息
     func sendMessage( message: inout Message,  onResponse: @escaping (Message)->()){
@@ -145,6 +173,15 @@ class SocketHelper: NSObject {
         messageListeners[message.messageId] = onResponse
         send(message: message)
     }
+    //添加消息处理
+    func addMessageHandler(onResponse: @escaping (Message)->()){
+        messageHandler = onResponse
+    }
+    // 移除消息处理
+    func removeMessageHandler(){
+        messageHandler = nil
+    }
+    
     
     func send(message: Message) {
         //let data = "msg:\(message)".data(using: .utf8)!
@@ -157,8 +194,12 @@ class SocketHelper: NSObject {
 //        out?.write(strBytes)
         //let messageJson = message.json!
         //print("message: \(messageJson) type: \(type(of: messageJson))")
-        var jsonSize = message.json!.count
-        //print("jsonSize: \(jsonSize) type: \(type(of: jsonSize))")
+        
+        
+        
+        // 小端模式转大端
+        var jsonSize: Int32 = Int32(message.json!.count).bigEndian
+        print("jsonSize: \(jsonSize) type: \(type(of: jsonSize))")
         let sizeBytes = Data(bytes: &jsonSize, count: 4)
         //print("sizeBytes: \(sizeBytes) type: \(type(of: sizeBytes))")
         let data = sizeBytes + message.json!
@@ -245,18 +286,36 @@ extension SocketHelper: StreamDelegate {
     private func readAvailableBytes(stream: InputStream) {
         let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: maxReadLength)
         while stream.hasBytesAvailable {
-          let numberOfBytesRead = inputStream.read(buffer, maxLength: maxReadLength)
-          
-          if numberOfBytesRead < 0, let error = stream.streamError {
-            print(error)
-            break
-          }
-          
-          // Construct the message object
-          if let message = processedMessageString(buffer: buffer, length: numberOfBytesRead) {
-            // Notify interested parties
-            delegate?.received(message: message)
-          }
+//            let numberOfBytesRead = inputStream.read(buffer, maxLength: maxReadLength)
+//
+//            if numberOfBytesRead < 0, let error = stream.streamError {
+//                print(error)
+//                break
+//            }
+//
+//            // Construct the message object
+//            if let message = processedMessageString(buffer: buffer, length: numberOfBytesRead) {
+//                // Notify interested parties
+//                delegate?.received(message: message)
+//            }
+            
+            // 1. get the message length
+            let lengthBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: messageReadLength)
+            inputStream.read(lengthBuffer, maxLength: messageReadLength)
+            let messageLength = Data(buffer: UnsafeMutableBufferPointer(start: lengthBuffer, count: messageReadLength)).lyz_4BytesToInt()
+            //print("messageLength: \(messageLength)")
+            // 2. Construct the message object
+            let numberOfBytesRead = inputStream.read(buffer, maxLength: messageLength)
+
+            if numberOfBytesRead < 0, let error = stream.streamError {
+                print(error)
+                break
+            }
+            
+            if let message = processedMessageString(buffer: buffer, length: numberOfBytesRead) {
+                // Notify interested parties
+                delegate?.received(message: message)
+            }
         }
     }
 
@@ -264,11 +323,14 @@ extension SocketHelper: StreamDelegate {
         let bufferPoint = UnsafeMutableBufferPointer(start: buffer, count: length)
         let data = Data(buffer: bufferPoint)
         //data[0..<4].lyz_4BytesToInt()
+        // 把消息按照4个字节分开
         print("data : \(data)")
-        let removeData = data.advanced(by: 4)
+        //let removeData = data.advanced(by: 4)
 //        print("buffer: \(data) type: \(type(of: data))")
 //        print("removeData: \(removeData) type: \(type(of: removeData))")
-        let message = Message(json: removeData)
+        //print("removeData: \(String(data: removeData, encoding: String.Encoding.utf8))")
+        let message = Message(json: data)
+        //print("Data: \(String(data: data, encoding: String.Encoding.utf8))")
         //1
 //        guard
 //          let stringArray = String(
@@ -281,20 +343,42 @@ extension SocketHelper: StreamDelegate {
 //          else {
 //            return nil
 //        }
-        //print("message: \(message)")
-        print("接收成功：\(message!.jsonStr ?? "")")
-        //2
-        //let messageSender: MessageSender = (name == self.username) ? .ourself : .someoneElse
-        //3 处理消息对应的回调函数并移除该消息回调函数
-        for messageResponse in messageListeners {
-            if messageResponse.key == message!.messageId {
+        print("接收 message: \(message)")
+        if message != nil {
+            if message!.type == MessageType.HEART_BEAT {
+                print("心跳包")
+                return message
+            }
+            print("接收成功：\(message!.jsonStr ?? "")")
+            //2
+            //let messageSender: MessageSender = (name == self.username) ? .ourself : .someoneElse
+            
+            //3 处理消息对应的回调函数并移除该消息回调函数
+            if messageListeners.keys.contains(message!.messageId), let message = message, let messageResponse = messageListeners[message.messageId]{
+                
                 print("消息回调处理开始  ")
-                messageResponse.value(message!)
-                messageListeners.removeValue(forKey: messageResponse.key)
+                messageResponse(message)
+                messageListeners.removeValue(forKey: message.messageId)
                 print("消息回调处理完成  ")
-                break
+            } else {
+                if let message = message, let messageHandler = messageHandler {
+                    print("自动消息回调处理开始  ")
+                    messageHandler(message)
+                    print("自动消息回调处理结束  ")
+                }
+                
             }
         }
+        
+//        for messageResponse in messageListeners {
+//            if messageResponse.key == message!.messageId {
+//                print("消息回调处理开始  ")
+//                messageResponse.value(message!)
+//                messageListeners.removeValue(forKey: messageResponse.key)
+//                print("消息回调处理完成  ")
+//                break
+//            }
+//        }
         return message
     }
 }

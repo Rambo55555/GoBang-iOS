@@ -11,6 +11,7 @@ struct GameLobbyView: View {
     @EnvironmentObject var viewModel: GoBangViewModel
     @State var addRoomAlertIsPresented: Bool = false
     @State var alertIsPresented: Bool = false
+    @State var matchIsPresented: Bool = false
     @State var text: String?
     @State var willMoveToBoardView = false
     @State var errorMessage = ""
@@ -19,6 +20,23 @@ struct GameLobbyView: View {
             Text("GameLobby")
             NavigationView {
                 VStack {
+                    Button("随机匹配") {
+                        matchIsPresented = true
+                        viewModel.socketHelper.matchRoom { message in
+                            if message.data == "ERROR" {
+                                errorMessage = "匹配失败"
+                                alertIsPresented = true
+                            } else {
+                                print("匹配成功：\(message)")
+                                matchIsPresented = false
+                                viewModel.setRoomInfo(message: message)
+                                willMoveToBoardView = true
+                            }
+                        }
+                    }
+                    .alert(isPresented: $matchIsPresented) {
+                        Alert(title: Text("匹配中"), message: Text("请稍等......"), dismissButton: .default(Text("取消")){ viewModel.cancelMatch() })
+                    }
                     Button("创建房间") {
                         viewModel.socketHelper.createRoom(onResponse: { message in
                             if message.data == "ERROR" {
@@ -26,7 +44,7 @@ struct GameLobbyView: View {
                                 alertIsPresented = true
                             } else {
                                 print(message)
-                                viewModel.setRoomNumber(roomNumber: message.data)
+                                viewModel.createRoom(message: message)
                                 willMoveToBoardView = true
                             }
                         })
@@ -51,7 +69,8 @@ struct GameLobbyView: View {
                                             
                                         } else {
                                             print(message)
-                                            viewModel.setRoomNumber(roomNumber: String(roomId))
+                                            //viewModel.setRoomNumber(roomNumber: String(roomId))
+                                            viewModel.joinRoom(message: message)
                                             willMoveToBoardView = true
                                         }
                                         
@@ -62,9 +81,10 @@ struct GameLobbyView: View {
                             })
                     }
                     
+                    
                         //BoardView().environmentObject(self.viewModel)
-                    NavigationLink(destination: BoardView().environmentObject(self.viewModel)) {
-                        Text("Random Match")
+                    NavigationLink(destination: ImageView().environmentObject(ImageViewModel())) {
+                        Text("看图")
                     }
                     
                 }.navigate(to: BoardView().environmentObject(self.viewModel), when: $willMoveToBoardView, navBarHiden: false)

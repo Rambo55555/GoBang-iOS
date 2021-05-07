@@ -9,10 +9,10 @@ import Foundation
 
 struct Message: Codable {
     
-    var to = ""
-    var from = ""
-    var data = ""
-    var token = ""
+    var to: String? = ""
+    var from: String? = ""
+    var data: String? = ""
+    var token: String? = ""
     var type = 0
     var messageId: Int = 0
     
@@ -27,7 +27,9 @@ struct Message: Codable {
     init?(json: Data?) {
         if json != nil, let newMesage = try? JSONDecoder().decode(Message.self, from: json!) {
             self = newMesage
+            print("json 字符串转换成功")
         } else {
+            print("json 字符串转换失败")
             return nil
         }
     }
@@ -88,5 +90,6 @@ struct MessageType {
     static var CANCEL_MATCH = 21
     static var ACK = 22
     static var RECONNECT = 23
+    static var HEART_BEAT = 24
 }
 
