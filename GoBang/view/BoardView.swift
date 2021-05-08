@@ -40,13 +40,13 @@ struct BoardView: View {
     @State var canPutPiece: Bool = false
     @State var pieceColor: GoBangModel.Piece.pieceState = .black
     @EnvironmentObject var viewModel: GoBangViewModel
+    @State var isImageAble: Bool = false
+    @State var winState: Bool = false
+    
 //    init(viewModel: GoBangViewModel) {
 //        self.viewModel = viewModel
 //    }
-    init() {
-        //print("ce shi")
-        //viewModel.addMessageHandler(onResponse: {message in print("hhh")})
-    }
+
     
     var locString : String {
         guard let loc = tapLocation else { return "Tap" }
@@ -146,8 +146,9 @@ struct BoardView: View {
                 .frame(width: rectWidth, height: rectHeight)
                 .background(Color.orange)
                 .gesture(putPiece())
-            ChessButton(cancelIsAble: $cancelIsAble, confirmIsAble: $confirmIsAble, tapLocation: $tapLocation, dragLocation: $dragLocation, row: $row, col: $col, curOrderNum: $curOrderNum, pieceScale: $pieceScale, pieceColor: $pieceColor, noteMessage: $noteMessage, canPut: $canPut)
+            ChessButton(cancelIsAble: $cancelIsAble, confirmIsAble: $confirmIsAble, tapLocation: $tapLocation, dragLocation: $dragLocation, row: $row, col: $col, curOrderNum: $curOrderNum, pieceScale: $pieceScale, pieceColor: $pieceColor, noteMessage: $noteMessage, canPut: $canPut, isImageAble: $isImageAble, winState: $winState)
         }
+        .navigate(to: ImageView(winState: $viewModel.winState).environmentObject(ImageViewModel()), when: $viewModel.isImageAble, navBarHiden: false)
         .onAppear(){
             viewModel.addMessageHandler(onResponse: messageHandler)
         }
@@ -190,6 +191,9 @@ struct BoardView: View {
                 curOrderNum += 1
                 noteMessage = "你输了"
                 canPutPiece = false
+                isImageAble = true
+                winState = false
+                viewModel.setImage()
             } else {
                 curOrderNum += 1
                 canPutPiece = true
@@ -248,6 +252,8 @@ struct ChessButton: View {
     @Binding var pieceColor: GoBangModel.Piece.pieceState
     @Binding var noteMessage: String
     @Binding var canPut: Bool
+    @Binding var isImageAble: Bool
+    @Binding var winState: Bool
     @EnvironmentObject var viewModel: GoBangViewModel
     var body: some View {
         HStack(spacing: 60) {
@@ -285,6 +291,10 @@ struct ChessButton: View {
         if viewModel.isWin(row: row!, col: col!, state: pieceColor) {
             noteMessage = "你赢了"
             canPut = false
+            isImageAble = true
+            winState = true
+            viewModel.setImage()
+            viewModel.setWinState()
         } else {
             canPut = false
         }

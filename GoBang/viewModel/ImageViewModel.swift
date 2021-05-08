@@ -26,7 +26,7 @@ class ImageViewModel: ObservableObject {
         
     }
     private var fetchImageCancellable: AnyCancellable?
-    func fetchBackgroundImageData()  {
+    func fetchBackgroundImageData(onResponse: @escaping () -> ())  {
         backgroundImage = nil
         if let url = backgroundURL {
             fetchImageCancellable?.cancel() // cancel the previous one
@@ -34,13 +34,15 @@ class ImageViewModel: ObservableObject {
             fetchImageCancellable = URLSession.shared.dataTaskPublisher(for: url)
                 .map { data, uRLResponse in UIImage(data: data)}
                 .receive(on: DispatchQueue.main)
-                .replaceError(with: nil)
-                .assign(to: \.backgroundImage, on: self)
+                .sink(receiveCompletion: {_ in onResponse() }, receiveValue: {data in self.backgroundImage = data})
+//                .replaceError(with: nil)
+//                .assign(to: \.backgroundImage, on: self)
+            
         }
     }
     func getImageUrl(type: String, onResponse: @escaping () -> ()) {
         // Prepare URL
-        let url = URL(string: "http://localhost:8080/image/getRandomOne?type=win")
+        let url = URL(string: "http://localhost:8080/image/getRandomOne?type=" + type)
         guard let requestUrl = url else { fatalError() }
         print("fetch background image......\(url)")
         // Prepare URL Request Object

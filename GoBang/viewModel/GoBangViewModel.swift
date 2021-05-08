@@ -26,7 +26,6 @@ class GoBangViewModel: ObservableObject{
         socketHelper.setupNetworkCommunication()
         if user != nil {
             socketHelper.establishConnection(username: user!.username, token: user!.token)
-            
         }
         
         
@@ -214,6 +213,15 @@ class GoBangViewModel: ObservableObject{
         goBangModel.pieces
     }
     
+    @Published var isImageAble = false
+    @Published var winState = false
+    
+    func setImage() {
+        isImageAble = true
+    }
+    func setWinState() {
+        winState = true
+    }
     
     
 

@@ -6,48 +6,43 @@
 //
 
 import SwiftUI
-
+class Model: ObservableObject {
+    @Published var pushed = false
+}
 struct ContentView: View {
     @State var showLoginView: Bool = true
     @ObservedObject var viewModel: GoBangViewModel
-    
+    @EnvironmentObject var model: Model
     var body: some View {
-//        GeometryReader { geometry in
-//            VStack(alignment: .center) {
-//                Spacer().frame(height: 100)
-//                Divider()
-//                BoardView()
-//                    .environmentObject(self.viewModel)
-//                Divider()
-//                Spacer().frame(height: 200)
-//                Button("New Game") {}
-//            }
-//            .padding()
-//            .frame(minWidth: 0, maxWidth: .infinity, minHeight:0, alignment: Alignment.center)
-//        }
-
-        if !viewModel.isLogin() {
-            LoginView(showLoginView: $showLoginView).environmentObject(self.viewModel)
-        } else {
-            GameLobbyView().environmentObject(self.viewModel)
-//                    GeometryReader { geometry in
-//                        VStack(alignment: .center) {
-//                            Spacer().frame(height: 100)
-//                            Divider()
-//                            BoardView()
-//                                .environmentObject(self.viewModel)
-//                            Divider()
-//                            Spacer().frame(height: 200)
-//                            Button("New Game") {}
-//                        }
-//                        .padding()
-//                        .frame(minWidth: 0, maxWidth: .infinity, minHeight:0, alignment: Alignment.center)
-//                    }
+        ZStack {
+            if !viewModel.isLogin() {
+                LoginView(showLoginView: $showLoginView).environmentObject(self.viewModel)
+            } else {
+                GameLobbyView().environmentObject(self.viewModel)
+            }
         }
+        
+//        NavigationView {
+//                    VStack {
+//                        Button("Push") {
+//                            self.model.pushed = true
+//                        }
+//
+//                        NavigationLink(destination: DetailView(), isActive: $model.pushed) { EmptyView() }
+//                    }
+//                }
     }
     
 }
+struct DetailView: View {
+    @EnvironmentObject var model: Model
 
+    var body: some View {
+        Button("Bring me Back") {
+            self.model.pushed = false
+        }
+    }
+}
 //struct ContentView_Previews: PreviewProvider {
 //    static var previews: some View {
 //        ContentView()

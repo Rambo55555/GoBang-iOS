@@ -11,7 +11,7 @@ import SwiftUI
 struct GoBangApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView(viewModel: GoBangViewModel())
+            ContentView(viewModel: GoBangViewModel()).environmentObject(Model())
         }
     }
 }

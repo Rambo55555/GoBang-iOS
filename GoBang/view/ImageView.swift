@@ -12,7 +12,8 @@ struct ImageView: View {
     
     @GestureState private var gestureZoomScale: CGFloat = 1.0
     @GestureState private var gesturePanOffset: CGSize = .zero
-    
+    @State var geometrySize: CGSize = .zero
+    @Binding var winState: Bool
     var isLoading: Bool {
         viewModel.backgroundURL != nil && viewModel.backgroundImage == nil
     }
@@ -80,10 +81,15 @@ struct ImageView: View {
                 .gesture(self.zoomGesture())
                 .edgesIgnoringSafeArea([.horizontal, .bottom])
                 .onAppear(){
-                    viewModel.getImageUrl(type: "win") {
+                    geometrySize = geometry.size
+                    print("geometrySize: \(geometrySize)")
+                    viewModel.getImageUrl(type: winState ? "win" : "lose") {
                         print("fetch background image......")
-                        viewModel.fetchBackgroundImageData()
+                        viewModel.fetchBackgroundImageData() {
+                            self.zoomToFit(viewModel.backgroundImage, in: geometrySize)
+                        }
                     }
+                    
                 }
 //                .onReceive(self.document.$backgroundImage) { image in
 //                    self.zoomToFit(image, in: geometry.size)
@@ -113,13 +119,32 @@ struct ImageView: View {
 //                }))
             }
             .zIndex(-1)
+            HStack {
+                Button("点我") {
+                    viewModel.getImageUrl(type: winState ? "win" : "lose") {
+                        print("fetch background image......")
+                        viewModel.fetchBackgroundImageData() {
+                            self.zoomToFit(viewModel.backgroundImage, in: geometrySize)
+                        }
+                        
+                    }
+                }
+//                Button("别点我") {
+//                    viewModel.getImageUrl(type: "lose") {
+//                        print("fetch background image......")
+//                        viewModel.fetchBackgroundImageData() {
+//                            self.zoomToFit(viewModel.backgroundImage, in: geometrySize)
+//                        }
+//                    }
+//                }
+            }
         }
     }
 }
 
-struct ImageView_Previews: PreviewProvider {
-    static var previews: some View {
-        ImageView().environmentObject(ImageViewModel())
-    }
-    
-}
+//struct ImageView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ImageView().environmentObject(ImageViewModel())
+//    }
+//    
+//}

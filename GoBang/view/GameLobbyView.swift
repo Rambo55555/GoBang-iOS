@@ -83,17 +83,18 @@ struct GameLobbyView: View {
                     
                     
                         //BoardView().environmentObject(self.viewModel)
-                    NavigationLink(destination: ImageView().environmentObject(ImageViewModel())) {
+                    NavigationLink(destination: ImageView(winState: $viewModel.winState).environmentObject(ImageViewModel())) {
                         Text("看图")
                     }
                     
-                }.navigate(to: BoardView().environmentObject(self.viewModel), when: $willMoveToBoardView, navBarHiden: false)
+                }
                 
             }
             .alert(isPresented: $alertIsPresented) {
                 Alert(title: Text("错误"), message: Text("房间号错误"), dismissButton: .default(Text("Got it!")))
             }
-        
+            .navigate(to: BoardView().environmentObject(self.viewModel), when: $willMoveToBoardView, navBarHiden: false)
+            //.navigate(to: ImageView(winState: $viewModel.winState).environmentObject(ImageViewModel()), when: $viewModel.isImageAble, navBarHiden: false)
         
     }
 }
