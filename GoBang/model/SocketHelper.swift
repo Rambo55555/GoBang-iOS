@@ -17,7 +17,7 @@ protocol ChatRoomDelegate: class {
 class SocketHelper: NSObject {
     
     static let shared = SocketHelper()
-    
+
     //1
     var inputStream: InputStream!
     var outputStream: OutputStream!
@@ -32,7 +32,7 @@ class SocketHelper: NSObject {
     private var messageHandler: ((_ message: Message)->())? = nil
     private var messageQueue = [Message]()
     private var messageList  = [Int : Message]()
-  
+    
     //3
     let maxReadLength = 4096
     let messageReadLength = 4
@@ -105,7 +105,36 @@ class SocketHelper: NSObject {
         print("移动棋子: \(str)")
         sendMessage(message: &message, onResponse: onResponse)
     }
-    
+    // 聊天
+    func chat(roomId: Int, msg: String, filename: String, onResponse: @escaping (Message)->()){
+        var message = Message(from: username)
+        message.setType(type: MessageType.CHAT)
+        let dictionary: NSMutableDictionary = NSMutableDictionary()
+        dictionary["roomId"] = roomId
+        dictionary["message"] = msg
+        dictionary["filename"] = filename
+        let str = getJSONStringFromDictionary(dictionary: dictionary)
+        message.data = str
+        sendMessage(message: &message, onResponse: onResponse)
+    }
+    // 投降
+    func giveUp(roomIdVal: Int,  onResponse: @escaping (Message)->()) {
+        var message = Message(from: username)
+        message.setType(type: MessageType.GIVE_UP)
+        message.data = String(roomIdVal)
+        sendMessage(message: &message, onResponse: onResponse)
+    }
+    // 退出房间
+    func exitRoom(roomId: Int, isPlayer: Bool, onResponse: @escaping (Message)->()){
+        var message = Message(from: username)
+        message.setType(type: MessageType.EXIT_ROOM)
+        let dictionary: NSMutableDictionary = NSMutableDictionary()
+        dictionary["roomId"] = roomId
+        dictionary["isPlayer"] = isPlayer
+        let str = getJSONStringFromDictionary(dictionary: dictionary)
+        message.data = str
+        sendMessage(message: &message, onResponse: onResponse)
+    }
     /// 字典转json字符串
     func getJSONStringFromDictionary(dictionary: NSMutableDictionary) -> String {
         if !JSONSerialization.isValidJSONObject(dictionary) {
@@ -119,23 +148,15 @@ class SocketHelper: NSObject {
             return "\"{}\""
         }
     }
-    
-    // 退出房间
-    func exitRoom(roomId: Int, isPlayer: Bool, onResponse:@escaping (Message)->()){
-        var message = Message(from: username)
-        message.setType(type: MessageType.EXIT_ROOM)
-        //message.data = gson.toJson(mapOf("roomId" to roomId, "isPlayer" to isPlayer))
-        sendMessage(message: &message, onResponse: onResponse)
-    }
     // 重发消息
     private func resendMessage(message: Message) {
         messageQueue.append(message)
     }
     // 取消准备
-    func cancelReady(roomIdVal: Int,  onResponse:@escaping (Message)->()) {
+    func cancelReady(roomId: Int,  onResponse:@escaping (Message)->()) {
         var message = Message(from: username)
         message.setType(type: MessageType.CANCEL_READY)
-        message.data = "$roomIdVal"
+        message.data = String(roomId)
         sendMessage(message: &message, onResponse: onResponse)
     }
     // 匹配房间
@@ -222,9 +243,14 @@ class SocketHelper: NSObject {
         var writeStream: Unmanaged<CFWriteStream>?
 
         // 2
+//        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault,
+//                                           "localhost" as CFString,
+//                                           55556,
+//                                           &readStream,
+//                                           &writeStream)
         CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault,
-                                           "localhost" as CFString,
-                                           55556,
+                                           Configuration.shared.IP as CFString,
+                                           Configuration.shared.port,
                                            &readStream,
                                            &writeStream)
 

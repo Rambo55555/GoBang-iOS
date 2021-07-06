@@ -15,7 +15,7 @@ struct ContentView: View {
     @EnvironmentObject var model: Model
     var body: some View {
         ZStack {
-            if !viewModel.isLogin() {
+            if !viewModel.loginStatus {
                 LoginView(showLoginView: $showLoginView).environmentObject(self.viewModel)
             } else {
                 GameLobbyView().environmentObject(self.viewModel)

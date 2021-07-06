@@ -86,6 +86,9 @@ struct GameLobbyView: View {
                     NavigationLink(destination: ImageView(winState: $viewModel.winState).environmentObject(ImageViewModel())) {
                         Text("看图")
                     }
+                    Button("退出登陆") {
+                        viewModel.logout()
+                    }
                     
                 }
                 

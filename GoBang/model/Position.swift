@@ -31,6 +31,6 @@ struct Position: Codable {
         return try? JSONEncoder().encode(self)
     }
     var jsonStr: String? {
-        return try? String(data: json!, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
+        return String(data: json!, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
     }
 }

@@ -39,10 +39,11 @@ struct Message: Codable {
     }
     
     var jsonStr: String? {
-        return try? String(data: json!, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
+        return String(data: json!, encoding: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
     }
     
     mutating func setRandomMessageId() {
+        // 2147483647
         self.messageId = Int(arc4random_uniform(2147483647))
     }
     

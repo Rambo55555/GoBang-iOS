@@ -27,7 +27,7 @@ struct BoardView: View {
     @State var curOrderNum = 1
     @State var cancelIsAble = false
     @State var confirmIsAble = false
-    @State var canPut = true
+    //@State var canPut = true
     @State var pieceScale: CGFloat = 1
     @State var player1: String = ""
     @State var player2: String = ""
@@ -40,9 +40,9 @@ struct BoardView: View {
     @State var canPutPiece: Bool = false
     @State var pieceColor: GoBangModel.Piece.pieceState = .black
     @EnvironmentObject var viewModel: GoBangViewModel
-    @State var isImageAble: Bool = false
-    @State var winState: Bool = false
-    
+    //@State var isImageAble: Bool = false
+    //@State var winState: Bool = false
+    @State var readyButtonText = "准备"
 //    init(viewModel: GoBangViewModel) {
 //        self.viewModel = viewModel
 //    }
@@ -96,7 +96,7 @@ struct BoardView: View {
     //            let row: Int = Int(ceil((loc.y - (rectHeight - BoardView.boardHeight)/2) / boardInfo.rowSize - 1))
                 print("location row: \(row) col: \(col)")
                 //print("token: \(viewModel.user!.token)")
-                if viewModel.hasPiece(row: row, col: col) == false && viewModel.isConfirmed(row: row, col: col) == false && canPutPiece {
+                if !viewModel.hasPiece(row: row, col: col) && !viewModel.isConfirmed(row: row, col: col) && canPutPiece {
                     cancelIsAble = true
                     confirmIsAble = true
                     viewModel.setPiece(row: row, col: col, state: pieceColor, order: curOrderNum, confirmed: false)
@@ -113,13 +113,10 @@ struct BoardView: View {
     }
     
     var body: some View {
-//        Rectangle()
-//            .fill(Color.init(hex: boardColor))
-//            .frame(width: 380, height: 380, alignment: .center)
         
-        VStack {
-            RoomView(readyIsAble: $readyIsAble, noteMessage: $noteMessage).environmentObject(viewModel)
+        VStack(spacing: 50) {
             
+            RoomView(readyIsAble: $readyIsAble, noteMessage: $noteMessage, readyButtonText: $readyButtonText).environmentObject(viewModel)
             ZStack{
                 Group {
                     Checkerboard(rows: BoardView.rows-1, columns: BoardView.columns-1)
@@ -128,31 +125,21 @@ struct BoardView: View {
                         ChessView(boardInfo: self.boardInfo, piece: piece, pieceScale: $pieceScale)
                     }
                 }
-                        .frame(width: BoardView.boardWidth, height: BoardView.boardHeight)
-                        
-    //                ForEach(model.pieces) { piece in
-    //                    if piece.state == "B" {
-    //                        ChessCircle(row: piece.row, col: piece.col, rows: BoardView.rows-1, columns: BoardView.columns-1, radius: BoardView.radius)
-    //                    } else if piece.state == "W" {
-    //                        ChessCircle(row: piece.row, col: piece.col, rows: BoardView.rows-1, columns: BoardView.columns-1, radius: BoardView.radius)
-    //                            .fill(Color.white)
-    //                    } else {
-    //                    }
-    //                }
-                
-
-                //.frame(width: BoardView.boardWidth, height: BoardView.boardHeight)
+                .frame(width: BoardView.boardWidth, height: BoardView.boardHeight)
             }
                 .frame(width: rectWidth, height: rectHeight)
                 .background(Color.orange)
                 .gesture(putPiece())
-            ChessButton(cancelIsAble: $cancelIsAble, confirmIsAble: $confirmIsAble, tapLocation: $tapLocation, dragLocation: $dragLocation, row: $row, col: $col, curOrderNum: $curOrderNum, pieceScale: $pieceScale, pieceColor: $pieceColor, noteMessage: $noteMessage, canPut: $canPut, isImageAble: $isImageAble, winState: $winState)
+            
+            ChessButton(cancelIsAble: $cancelIsAble, confirmIsAble: $confirmIsAble, tapLocation: $tapLocation, dragLocation: $dragLocation, row: $row, col: $col, curOrderNum: $curOrderNum, pieceScale: $pieceScale, pieceColor: $pieceColor, noteMessage: $noteMessage, canPutPiece: $canPutPiece)
         }
         .navigate(to: ImageView(winState: $viewModel.winState).environmentObject(ImageViewModel()), when: $viewModel.isImageAble, navBarHiden: false)
         .onAppear(){
+            viewModel.winState = false
             viewModel.addMessageHandler(onResponse: messageHandler)
         }
         .onDisappear(){
+            viewModel.exitRoom(roomId: room.roomId, onResponse: {message in })
             viewModel.clearRoomInfo()
         }
 
@@ -164,8 +151,8 @@ struct BoardView: View {
             print("对手进入房间")
             onOpponentEnterRoom(message: message)
         case MessageType.OPPONENT_READY:
-            print("对手已经准备")
             onOpponentReady(message: message)
+            print("对手已经准备 \(viewModel.room)")
         case MessageType.BEGIN_GAME:
             print("游戏开始")
             // 游戏开始动画
@@ -174,15 +161,34 @@ struct BoardView: View {
             print("移动棋子")
             onMove(message: message)
         case MessageType.CANCEL_READY:
-            print("取消准备")
-            
+            onOpponentCancelReady(message: message)
+            print("对手取消准备 \(viewModel.room)")
         case MessageType.OPPONENT_EXIT_ROOM:
             print("退出房间")
             noteMessage = "对手退出房间"
         case MessageType.WIN:
             print("胜利: \(message)")
+            onWin(message: message)
         default:
             print("default ")
+        }
+    }
+    func onWin(message: Message) {
+        let winnerString = message.data!
+        
+        let index = winnerString.index(winnerString.startIndex, offsetBy: 1)
+        let winner = winnerString[index...]
+        print("winner: \(winner)")
+        if winner == viewModel.user!.username {
+            noteMessage = "你赢了"
+            canPutPiece = false
+            viewModel.isImageAble = true
+            viewModel.winState = true
+        } else {
+            noteMessage = "你输了"
+            canPutPiece = false
+            viewModel.isImageAble = true
+            viewModel.winState = false
         }
     }
     func onMove(message: Message) {
@@ -191,13 +197,23 @@ struct BoardView: View {
                 curOrderNum += 1
                 noteMessage = "你输了"
                 canPutPiece = false
-                isImageAble = true
-                winState = false
-                viewModel.setImage()
+                viewModel.isImageAble = true
+                viewModel.winState = false
             } else {
                 curOrderNum += 1
                 canPutPiece = true
             }
+        }
+        if viewModel.user!.username == viewModel.room.player1!.username {
+            viewModel.isPlayer1TimerAble = true
+            viewModel.player1TimeRemaining = 60
+            viewModel.isPlayer2TimerAble = false
+            viewModel.startTimer1()
+        } else {
+            viewModel.isPlayer2TimerAble = true
+            viewModel.player2TimeRemaining = 60
+            viewModel.isPlayer1TimerAble = false
+            viewModel.startTimer2()
         }
         
     }
@@ -213,19 +229,43 @@ struct BoardView: View {
 //        player1 = viewModel.room.player1!.username
 //        player2 = viewModel.room.player2!.username
         viewModel.onOpponentReady(message: message)
-        setRoomInfo()
+        //setRoomInfo()
+    }
+    func onOpponentCancelReady(message: Message) {
+        viewModel.onOpponentCancelReady(message: message)
+        //setRoomInfo()
     }
     // 游戏开始动画
     func onBeginGame(message: Message) {
+        readyIsAble = false
         noteMessage = "游戏开始 你是"
         // 黑棋是 0
         if Int(message.data!) == 0 {
             noteMessage += "黑棋先手"
             pieceColor = .black
             canPutPiece = true
+            if viewModel.user!.username == viewModel.room.player1!.username {
+                viewModel.isPlayer1TimerAble = true
+                viewModel.player1TimeRemaining = 60
+                viewModel.startTimer1()
+            } else {
+                viewModel.isPlayer2TimerAble = true
+                viewModel.player2TimeRemaining = 60
+                viewModel.startTimer2()
+            }
+            
         } else {
             noteMessage += "白棋后手"
             pieceColor = .white
+            if viewModel.user!.username != viewModel.room.player1!.username {
+                viewModel.isPlayer1TimerAble = true
+                viewModel.player1TimeRemaining = 60
+                viewModel.startTimer1()
+            } else {
+                viewModel.isPlayer2TimerAble = true
+                viewModel.player2TimeRemaining = 60
+                viewModel.startTimer2()
+            }
         }
     }
     
@@ -251,12 +291,25 @@ struct ChessButton: View {
     @Binding var pieceScale: CGFloat
     @Binding var pieceColor: GoBangModel.Piece.pieceState
     @Binding var noteMessage: String
-    @Binding var canPut: Bool
-    @Binding var isImageAble: Bool
-    @Binding var winState: Bool
+    @Binding var canPutPiece: Bool
+
     @EnvironmentObject var viewModel: GoBangViewModel
     var body: some View {
         HStack(spacing: 60) {
+            Button("认输") {
+                viewModel.giveUp { message in
+                    if message.data == "ERROR" {
+                        print("投降失败")
+                    } else {
+                        print(message)
+                        curOrderNum += 1
+                        noteMessage = "你输了"
+                        canPutPiece = false
+                        viewModel.isImageAble = true
+                        viewModel.winState = false
+                    }
+                }
+            }
             Button(action: {
                 if viewModel.isConfirmed(row: row!, col: col!) == false {
                     viewModel.setPiece(row: row!, col: col!, state: .out, order: curOrderNum, confirmed: false)
@@ -288,15 +341,22 @@ struct ChessButton: View {
         }
         confirmIsAble = false
         cancelIsAble = false
+        if viewModel.user!.username == viewModel.room.player1!.username {
+            viewModel.isPlayer1TimerAble = false
+            viewModel.isPlayer2TimerAble = true
+            viewModel.player2TimeRemaining = 60
+        } else {
+            viewModel.isPlayer2TimerAble = false
+            viewModel.isPlayer1TimerAble = true
+            viewModel.player1TimeRemaining = 60
+        }
         if viewModel.isWin(row: row!, col: col!, state: pieceColor) {
             noteMessage = "你赢了"
-            canPut = false
-            isImageAble = true
-            winState = true
-            viewModel.setImage()
-            viewModel.setWinState()
+            canPutPiece = false
+            viewModel.isImageAble = true
+            viewModel.winState = false
         } else {
-            canPut = false
+            canPutPiece = false
         }
     }
 }
@@ -409,6 +469,8 @@ struct ChessView: View {
                     Image(uiImage: UIImage(named: "White")!)
                         .resizable()
                         .frame(width: 22, height: 22)
+                        .scaleEffect(pieceScale)
+                        .animation(Animation.easeInOut(duration: 0.5).repeatForever(autoreverses: true))
                 }
             }
         }
@@ -423,30 +485,30 @@ struct ChessView: View {
     
 }
 
-struct TapView: View {
-    
-    @State var tapLocation: CGPoint?
-    
-    @State var dragLocation: CGPoint?
-
-    var locString : String {
-        guard let loc = tapLocation else { return "Tap" }
-        return "\(Int(loc.x)), \(Int(loc.y))"
-    }
-    
-    var body: some View {
-        
-        let tap = TapGesture().onEnded { tapLocation = dragLocation }
-        let drag = DragGesture(minimumDistance: 0).onChanged { value in
-            dragLocation = value.location
-        }.sequenced(before: tap)
-        
-        Text(locString)
-        .frame(width: 200, height: 200)
-        .background(Color.gray)
-        .gesture(drag)
-    }
-}
+//struct TapView: View {
+//
+//    @State var tapLocation: CGPoint?
+//
+//    @State var dragLocation: CGPoint?
+//
+//    var locString : String {
+//        guard let loc = tapLocation else { return "Tap" }
+//        return "\(Int(loc.x)), \(Int(loc.y))"
+//    }
+//
+//    var body: some View {
+//
+//        let tap = TapGesture().onEnded { tapLocation = dragLocation }
+//        let drag = DragGesture(minimumDistance: 0).onChanged { value in
+//            dragLocation = value.location
+//        }.sequenced(before: tap)
+//
+//        Text(locString)
+//        .frame(width: 200, height: 200)
+//        .background(Color.gray)
+//        .gesture(drag)
+//    }
+//}
 
 struct ChessCircle: Shape {
     let row: Int
@@ -474,10 +536,12 @@ struct RoomView: View {
     @EnvironmentObject var viewModel: GoBangViewModel
     @Binding var readyIsAble: Bool
     @Binding var noteMessage: String
+    @Binding var readyButtonText: String
+    
     var body: some View {
-        VStack {
-            HStack(spacing: 60) {
-                VStack(spacing: 25) {
+        VStack() {
+            HStack() {
+                VStack(spacing: 20) {
                     if viewModel.room.player1?.chessColor == 0 {
                         Image(systemName: "person")
                             .scaleEffect(4)
@@ -487,29 +551,53 @@ struct RoomView: View {
                     }
                     Text(viewModel.room.player1!.username)
                     Text(viewModel.room.player1!.status == 0 ? "未准备" : "已准备")
+                    Text("\(viewModel.player1TimeRemaining)")
+                        .opacity(viewModel.isPlayer1TimerAble ? 1 : 0)
+//                        .onReceive(viewModel.timer) { input in
+//                        if viewModel.player1TimeRemaining > 0 {
+//                            viewModel.player1TimeRemaining -= 1
+//                            print("计时器：\(input)")
+//                        } else {
+//                            viewModel.timer.invalidate()
+//                        }
+//                    }
+                        
                 }
                 VStack(spacing: 25) {
                     Text("房间号")
                     Text(String(viewModel.room.roomId))
                     Button(action: {
                         //准备
-                        viewModel.ready(roomId: viewModel.room.roomId) { message in
-                            if message.data == "ERROR" {
-                                print("准备失败")
-                            } else {
-                                print(message)
-                                readyIsAble = false
-                                viewModel.setSelfReady()
+                        if readyButtonText == "准备" {
+                            viewModel.ready(roomId: viewModel.room.roomId) { message in
+                                if message.data == "ERROR" {
+                                    print("准备失败")
+                                } else {
+                                    print(message)
+                                    viewModel.setSelfReady(ready: true)
+                                    readyButtonText = "取消准备"
+                                }
+                            }
+                        } else {
+                            viewModel.cancelReady(roomId: viewModel.room.roomId) { message in
+                                if message.data == "ERROR" {
+                                    print("取消准备失败")
+                                } else {
+                                    print(message)
+                                    viewModel.setSelfReady(ready: false)
+                                    readyButtonText = "准备"
+                                }
                             }
                         }
                     }, label: {
-                        Text("准备")
+                        Text(readyButtonText)
                             .font(Font.system(size:30, design: .rounded))
                             .disabled(readyIsAble == false)
                     })
                     .opacity(readyIsAble ? 1 : 0)
                     
                 }
+                .frame(width: 150, height: 100)
                 VStack(spacing: 25) {
                     if viewModel.room.player1?.chessColor == 1 {
                         Image(systemName: "person")
@@ -520,6 +608,13 @@ struct RoomView: View {
                     }
                     Text(viewModel.room.player2!.username)
                     Text(viewModel.room.player2!.status == 0 ? "未准备" : "已准备")
+                    Text("\(viewModel.player2TimeRemaining)")
+//                        .onReceive(viewModel.timer) { input in
+//                        if viewModel.player2TimeRemaining > 0 {
+//                            viewModel.player2TimeRemaining -= 1
+//                        }
+//                    }
+                        .opacity(viewModel.isPlayer2TimerAble ? 1 : 0)
                 }
                 
             }

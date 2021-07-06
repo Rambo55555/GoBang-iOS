@@ -13,6 +13,7 @@ class ImageViewModel: ObservableObject {
     @Published var steadyStatePanOffset: CGSize = .zero
     @Published private(set) var backgroundImage: UIImage?
     var backgroundURL: URL? = URL(string: "http://qs5xv187z.hn-bkt.clouddn.com/2021_2_1439.jpg")
+
 //    var backgroundURL: URL? {
 //        get {
 //            self.backgroundURL
@@ -42,7 +43,7 @@ class ImageViewModel: ObservableObject {
     }
     func getImageUrl(type: String, onResponse: @escaping () -> ()) {
         // Prepare URL
-        let url = URL(string: "http://localhost:8080/image/getRandomOne?type=" + type)
+        let url = URL(string: Configuration.shared.address + "image/getRandomOne?type=" + type)
         guard let requestUrl = url else { fatalError() }
         print("fetch background image......\(url)")
         // Prepare URL Request Object
